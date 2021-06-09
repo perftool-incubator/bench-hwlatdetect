@@ -1,0 +1,54 @@
+#!/bin/bash
+exec >hwlatdetect-client-stderrout.txt
+exec 2>&1
+
+. /usr/bin/hwlatdetect-base || (echo "/usr/bin/hwlatdetect-base not found"; exit 1)
+
+dump_runtime
+validate_label
+validate_sw_prereqs
+
+# defaults
+duration=60
+threshold=1us
+
+longopts="duration:,threshold:"
+opts=$(getopt -q -o "d:t:" --longoptions "$longopts" -n "getopt.sh" -- "$@");
+eval set -- "$opts";
+while true; do
+    case "$1" in
+        -d|--duration)
+            shift
+            duration=$1
+            shift
+            ;;
+        -t|--threshold)
+            shift
+            threshold=$1
+            shift
+            ;;
+        --)
+            shift;
+            break
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+cmd="hwlatdetect --duration=${duration} --threshold=${threshold}"
+echo "About to run: $cmd"
+date +%s.%N >begin.txt
+$cmd >hwlatdetect-bin-stderrout.txt 2>&1
+date +%s.%N >end.txt
+
+if grep -q "test finished" hwlatdetect-bin-stderrout.txt; then
+    rc=0
+else
+    rc=1
+fi
+
+if [ $rc -gt 0 ]; then
+    exit_error "`cat hwlatdetect-bin-stderrout.txt`"
+fi

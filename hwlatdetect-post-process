@@ -1,0 +1,92 @@
+#!/usr/bin/perl
+## -*- mode: perl; indent-tabs-mode: t; perl-indent-level: 4 -*-
+## vim: autoindent tabstop=4 shiftwidth=4 expandtab softtabstop=4 filetype=perl
+
+use strict;
+use warnings;
+use JSON::XS;
+use Data::Dumper;
+use Getopt::Long;
+
+BEGIN {
+    if (!(exists $ENV{'TOOLBOX_HOME'} && -d "$ENV{'TOOLBOX_HOME'}/perl")) {
+	print "This script requires libraries that are provided by the toolbox project.\n";
+	print "Toolbox can be acquired from https://github.com/perftool-incubator/toolbox and\n";
+	print "then use 'export TOOLBOX_HOME=/path/to/toolbox' so that it can be located.\n";
+	exit 1;
+    }
+}
+use lib "$ENV{'TOOLBOX_HOME'}/perl";
+use toolbox::json;
+use toolbox::metrics;
+
+my $ignore;
+
+GetOptions ("duration=s" => \$ignore,
+            "threshold=s" => \$ignore
+            );
+
+my %metric_types;
+my $primary_metric = 'latency-spikes-usec';
+my %times;
+my $metric_data_name;
+
+foreach my $i (qw(begin end)) {
+    my $file = $i . ".txt";
+    open(FH, $file) || die "Could not open " . $file;
+    $times{$i} = int (<FH> * 1000);
+    close FH;
+}
+
+my $latency_threshold;
+
+my $result_file = "hwlatdetect-bin-stderrout.txt";
+if ( -e $result_file) {
+    open(FH, $result_file) || die "Could not open file " . $result_file;
+    while (<FH>) {
+        if ( /Latency threshold:\s+([0-9]+)us/ ) {
+            #         Latency threshold: 1us
+	    $latency_threshold = $1;
+	} elsif ( /Max Latency:\s+(.*)$/ ) {
+            # Max Latency: Below threshold
+	    # Max Latency: 5us
+	    my $result = $1;
+	    my $max_latency = -1;
+	    if ( $result =~ /Below threshold/ ) {
+		$max_latency = $latency_threshold;
+	    } elsif ( $result =~ /([0-9]+)us/ ) {
+		$max_latency = $1;
+	    }
+
+	    if ( $max_latency == -1 ) {
+		print "ERROR: Failed to determine max latency, something unexpected probably happend!\n";
+		exit 1;
+	    } else {
+		my %desc = ('source' => 'hwlatdetect', 'type' => $primary_metric, 'class' => 'count');
+		my %names = ();
+		my %sample = ('begin' => $times{'begin'}, 'end' => $times{'end'}, 'value' => int $max_latency);
+		log_sample("0", \%desc, \%names, \%sample);
+	    }
+	}
+    }
+    $metric_data_name = finish_samples();
+    close(FH);
+}
+# Associate the metrics with a benchmark-period (in this case "measurement")
+my %sample;
+my @periods;
+my @metrics = ( $metric_data_name );
+my %period = ('name' => 'measurement');
+$sample{'rickshaw-bench-metric'}{'schema'}{'version'} = "2021.04.12";
+$period{'metric-files'} = \@metrics;
+push(@periods, \%period);
+$sample{'periods'} = \@periods;
+$sample{'primary-period'} = 'measurement';
+$sample{'primary-metric'} = $primary_metric;
+if (scalar @metrics > 0) {
+    my $coder = JSON::XS->new;
+    open(JSON_FH, ">post-process-data.json") ||
+        die("Could not open file post-process-data.json for writing\n");
+    print JSON_FH $coder->encode(\%sample);
+    close JSON_FH;
+}

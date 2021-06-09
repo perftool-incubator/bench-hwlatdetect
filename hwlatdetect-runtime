@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# defaults
+duration=60
+
+longopts="duration:"
+opts=$(getopt -q -o "d:" --longoptions "$longopts" -n "getopt.sh" -- "$@");
+eval set -- "$opts";
+while true; do
+    case "$1" in
+        -d|--duration)
+            shift
+            duration=$1
+            shift
+            ;;
+        --)
+            shift;
+            break
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+echo "$duration"
