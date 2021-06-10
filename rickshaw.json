@@ -1,0 +1,29 @@
+{
+    "rickshaw-benchmark": {
+        "schema": {
+            "version": "2020.05.18"
+        }
+    },
+    "benchmark": "hwlatdetect",
+    "controller": {
+        "post-script": "%bench-dir%hwlatdetect-post-process"
+    },
+    "client": {
+        "files-from-controller": [
+            {
+                "src": "%bench-dir%/hwlatdetect-base",
+                "dest": "/usr/bin/"
+            },
+            {
+                "src": "%bench-dir%/hwlatdetect-runtime",
+                "dest": "/usr/bin/"
+            },
+            {
+                "src": "%bench-dir%/hwlatdetect-client",
+                "dest": "/usr/bin/"
+            }
+        ],
+        "runtime": "hwlatdetect-runtime",
+        "start": "hwlatdetect-client"
+    }
+}

@@ -1,0 +1,54 @@
+{
+  "workshop": {
+    "schema": {
+      "version": "2020.03.02"
+    }
+  },
+  "userenvs": [
+    {
+      "name": "default",
+      "requirements": [
+        "numactl_src",
+        "rttests_src"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "numactl_src",
+      "type": "source",
+      "source_info": {
+        "url": "https://github.com/numactl/numactl/releases/download/v2.0.14/numactl-2.0.14.tar.gz",
+        "filename": "numactl-2.0.14.tar.gz",
+        "commands": {
+          "unpack": "tar -xzf numactl-2.0.14.tar.gz",
+          "get_dir": "tar -tzf numactl-2.0.14.tar.gz | head -n 1",
+          "commands": [
+            "./configure --prefix=/usr",
+            "make",
+            "make install",
+            "ldconfig"
+          ]
+        }
+      }
+    },
+    {
+      "name": "rttests_src",
+      "type": "source",
+      "source_info": {
+        "url": "https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/snapshot/rt-tests-1.10.tar.gz",
+        "filename": "rt-tests-1.10.tar.gz",
+        "commands": {
+          "unpack": "tar -xzf rt-tests-1.10.tar.gz",
+          "get_dir": "tar -tzf rt-tests-1.10.tar.gz | head -n 1",
+          "commands": [
+            "make",
+            "make install",
+            "/bin/cp cyclictest /usr/bin",
+            "ldconfig"
+          ]
+        }
+      }
+    }
+  ]
+}
