@@ -19,15 +19,15 @@
       "type": "source",
       "source_info": {
         "url": "https://github.com/numactl/numactl/releases/download/v2.0.14/numactl-2.0.14.tar.gz",
-        "filename": "numactl-2.0.14.tar.gz",
+        "filename": "numactl.tar.gz",
         "commands": {
-          "unpack": "tar -xzf numactl-2.0.14.tar.gz",
-          "get_dir": "tar -tzf numactl-2.0.14.tar.gz | head -n 1",
+          "unpack": "tar -xzf numactl.tar.gz",
+          "get_dir": "tar -tzf numactl.tar.gz | head -n 1",
           "commands": [
             "./configure --prefix=/usr",
             "make",
             "make install",
-            "ldconfig"
+            "ldconfig --verbose"
           ]
         }
       }
