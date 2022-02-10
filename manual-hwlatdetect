@@ -1,0 +1,82 @@
+#!/bin/bash
+
+longopts="duration:,threshold:,cpumask:,width:"
+opts=$(getopt -q -o "c:d:t:w:" --longoptions "$longopts" -n "getopt.sh" -- "$@");
+eval set -- "$opts";
+while true; do
+    case "$1" in
+        -c|--cpumask)
+            shift
+            cpumask=$1
+            shift
+            ;;
+        -d|--duration)
+            shift
+            duration=$1
+            shift
+            ;;
+        -t|--threshold)
+            shift
+            threshold=$1
+            shift
+            ;;
+        -c|--width)
+            shift
+            width=$1
+            shift
+            ;;
+        --)
+            shift;
+            break
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+set -eux
+
+# cleanup
+/bin/umount /sys/kernel/debug || true
+
+# mount debugfs
+grep debugfs /proc/mounts
+if [ $? -eq 1 ]; then
+    /bin/mount -t debugfs none /sys/kernel/debug
+fi
+cat /proc/mounts
+
+# reset trace file
+echo > sys/kernel/debug/tracing/trace
+
+# set threshold, minimum latency value to be considered (usecs)
+echo ${threshold} > /sys/kernel/debug/tracing/tracing_thresh
+
+# set width time period to sample with CPUs held (usecs)
+if [ -n $width} ]; then
+    echo ${width} > /sys/kernel/debug/tracing/hwlat_detector/width
+fi
+
+# cpumask
+if [ -n ${cpumask} ]; then
+    echo ${cpumask} > /sys/kernel/debug/tracing/tracing_cpumask
+fi
+
+# set hwlat tracer
+echo hwlat > /sys/kernel/debug/tracing/current_tracer
+
+# start hwlat tracer
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+
+# test duration
+sleep ${duration}
+
+# stop hwlat tracer
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+
+# wait to stop tracer
+sleep 3
+
+# get results from trace file
+cat /sys/kernel/debug/tracing/trace

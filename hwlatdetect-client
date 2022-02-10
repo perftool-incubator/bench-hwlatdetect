@@ -12,11 +12,16 @@ validate_sw_prereqs
 duration=60
 threshold=1us
 
-longopts="duration:,threshold:"
-opts=$(getopt -q -o "d:t:" --longoptions "$longopts" -n "getopt.sh" -- "$@");
+longopts="duration:,threshold:,width:,cpumask:,utility:"
+opts=$(getopt -q -o "c:d:t:w:u:" --longoptions "$longopts" -n "getopt.sh" -- "$@");
 eval set -- "$opts";
 while true; do
     case "$1" in
+        -c|--cpumask)
+            shift
+            cpumask=$1
+            shift
+            ;;
         -d|--duration)
             shift
             duration=$1
@@ -25,6 +30,16 @@ while true; do
         -t|--threshold)
             shift
             threshold=$1
+            shift
+            ;;
+        -c|--width)
+            shift
+            width=$1
+            shift
+            ;;
+        -u|--utility)
+            shift
+            utility=$1
             shift
             ;;
         --)
@@ -38,6 +53,36 @@ while true; do
 done
 
 cmd="hwlatdetect --duration=${duration} --threshold=${threshold}"
+
+if [ -n ${utility} ]; then
+    echo "utility: $utility"
+    if [ "${utility}" = "no" ]; then
+         echo "Manual tracer mode on: The utility will NOT be used."
+         cpumask_arg=""
+         if [ -n ${cpumask} ]; then
+              cpumask_arg="--cpumask=${cpumask}"
+         fi
+         width_arg=""
+         if [ -n ${width} ]; then
+              width_arg="--cpumask=${width}"
+         fi
+         cmd="manual-hwlatdetect --duration=${duration} --threshold=${threshold} ${cpumask_arg} ${width_arg}"
+    fi
+else
+    utility="yes"
+fi
+
+if [ "${utility}" != "no" ]; then
+     if [ -n ${cpumask} ]; then
+           echo "Error: cpumask is not supported by the utility, set utility=no to run on manual mode."
+           exit 1
+     fi
+     if [ -n ${width} ]; then
+           echo "Error: width is not supported by the utility, set utility=no to run on manual mode."
+           exit 1
+     fi
+fi
+
 echo "About to run: $cmd"
 date +%s.%N >begin.txt
 $cmd >hwlatdetect-bin-stderrout.txt 2>&1
