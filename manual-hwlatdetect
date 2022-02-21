@@ -60,6 +60,9 @@ fi
 
 # cpumask
 if [ -n ${cpumask} ]; then
+    if [ "${cpumask}" = "auto" ] || [ "${cpumask}" = "yes" ] || [ "${cpumask}" = "workload" ]; then
+        cpumask=$(${TOOLBOX_HOME}/bin/cpumask.py --cpus ${WORKLOAD_CPUS} | grep hexmask | cut -d'=' -f 2)
+    fi
     echo ${cpumask} > /sys/kernel/debug/tracing/tracing_cpumask
 fi
 
