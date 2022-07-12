@@ -35,7 +35,7 @@ function dump_runtime() {
     cat /proc/meminfo
     echo
     echo DPDK devices:
-    dpdk-devbind -s
+    dpdk-devbind.py -s
     echo
     echo netdevs:
     ls -l /sys/class/net
