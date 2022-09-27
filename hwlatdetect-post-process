@@ -83,6 +83,7 @@ push(@periods, \%period);
 $sample{'periods'} = \@periods;
 $sample{'primary-period'} = 'measurement';
 $sample{'primary-metric'} = $primary_metric;
+$sample{'benchmark'} = 'hwlatdetect';
 if (scalar @metrics > 0) {
     my $coder = JSON::XS->new;
     open(JSON_FH, ">post-process-data.json") ||
