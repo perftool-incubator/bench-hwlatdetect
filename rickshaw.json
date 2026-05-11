@@ -6,7 +6,7 @@
     },
     "benchmark": "hwlatdetect",
     "controller": {
-        "post-script": "%bench-dir%hwlatdetect-post-process"
+        "post-script": "%bench-dir%hwlatdetect-post-process.py"
     },
     "client": {
         "files-from-controller": [
