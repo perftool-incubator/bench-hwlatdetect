@@ -10,5 +10,5 @@ Scripts and configuration to run the [hwlatdetect](https://wiki.linuxfoundation.
 | `hwlatdetect-base` | Base setup shared by other scripts |
 | `hwlatdetect-client` | Client-side benchmark execution |
 | `hwlatdetect-runtime` | Runtime extraction |
-| `hwlatdetect-post-process` | Post-processing: parses hwlatdetect output into crucible metrics |
+| `hwlatdetect-post-process.py` | Post-processing: parses hwlatdetect output into crucible metrics |
 | `workshop.json` | Engine image build: compiles rt-tests from source |

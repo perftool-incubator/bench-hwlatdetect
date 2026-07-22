@@ -13,7 +13,7 @@ Bash — all scripts
 | `hwlatdetect-base` | Base setup shared by other scripts |
 | `hwlatdetect-client` | Client-side benchmark execution |
 | `hwlatdetect-runtime` | Extracts runtime from command-line options |
-| `hwlatdetect-post-process` | Parses hwlatdetect output into crucible metrics |
+| `hwlatdetect-post-process.py` | Parses hwlatdetect output into crucible metrics |
 | `workshop.json` | Engine image build: compiles rt-tests from source |
 
 ## Conventions
