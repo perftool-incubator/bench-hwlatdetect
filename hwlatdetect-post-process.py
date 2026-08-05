@@ -59,7 +59,7 @@ def main():
                     print("ERROR: Failed to determine max latency, something unexpected probably happened!")
                     sys.exit(1)
 
-                desc = {"source": "hwlatdetect", "type": primary_metric, "class": "count"}
+                desc = {"source": "hwlatdetect", "type": primary_metric, "class": "latency", "default-aggregation": "max"}
                 sample = {"begin": times["begin"], "end": times["end"], "value": max_latency}
                 metrics.log_sample("0", desc, {}, sample)
 
