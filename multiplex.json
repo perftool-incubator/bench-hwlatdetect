@@ -2,19 +2,19 @@
   "presets": {
   },
   "validations": {
-    "integer_gt_zero": {
-      "description": "a whole number > 0",
+    "time_duration": {
+      "description": "a duration with optional unit suffix (s/m/h/d/w)",
       "args": [
         "duration"
       ],
-      "vals": "^[1-9][0-9]*$"
+      "vals": "^[1-9][0-9]*[smhdw]?$"
     },
-    "threshold": {
-      "description": "latency threshold (e.g. 1us, 10us, or whole number of microseconds)",
+    "latency_threshold": {
+      "description": "a latency threshold with optional unit suffix (us/ms/s)",
       "args": [
         "threshold"
       ],
-      "vals": "^[1-9][0-9]*(us)?$"
+      "vals": "^[1-9][0-9]*(us|ms|s)?$"
     }
   }
 }
