@@ -1,0 +1,22 @@
+{
+  "rickshaw-benchmark-metadata": {
+    "schema": {
+      "version": "2026.08.11"
+    }
+  },
+  "benchmark": "hwlatdetect",
+  "description": "Hardware latency detector (from rt-tests) -- detects latency spikes caused by hardware and firmware (SMIs, NMIs, BIOS/firmware interrupts).",
+  "cdm_indexed": true,
+  "cdm_sources": [
+    {
+      "source": "hwlatdetect",
+      "types": [
+        "latency-spikes-usec"
+      ]
+    }
+  ],
+  "output_files": [
+    "hwlatdetect-bin-stderrout.txt",
+    "hwlatdetect-client-stderrout.txt"
+  ]
+}
