@@ -1,0 +1,20 @@
+{
+  "presets": {
+  },
+  "validations": {
+    "time_duration": {
+      "description": "a duration with optional unit suffix (s/m/h/d/w)",
+      "args": [
+        "duration"
+      ],
+      "vals": "^[1-9][0-9]*[smhdw]?$"
+    },
+    "latency_threshold": {
+      "description": "a latency threshold with optional unit suffix (us/ms/s)",
+      "args": [
+        "threshold"
+      ],
+      "vals": "^[1-9][0-9]*(us|ms|s)?$"
+    }
+  }
+}
